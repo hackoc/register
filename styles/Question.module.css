@@ -1,0 +1,48 @@
+
+.input {
+
+    width: 100%;
+    padding: 10px;
+    font-size: 24px;
+    border-radius: 8px;
+    background-color: var(--orange);
+    border: none;
+    color: black;
+    cursor: pointer;
+    font-family: var(--font-stack);
+    margin-bottom: 16px;
+    transition: 0.3s all;
+    outline: none;
+    border: 2px solid var(--orange)
+  }
+  
+  .input:focus, .input:focus-within {
+    border: 2px solid black;
+  }
+  
+  .button:hover {
+    box-shadow: 0px 2px 20px #00000099;
+  }
+  
+
+  .input input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: rgb(126, 116, 104);
+    opacity: 1; /* Firefox */
+  }
+  
+  .input input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: rgb(33, 21, 21);
+  }
+  
+  .input input::-ms-input-placeholder { /* Microsoft Edge */
+    color: #fff;
+  }
+
+  .input input {
+    transition: 0.3s all;
+  }
+
+  .input input:valid {
+    border-radius: 8px;
+    background: white!important;
+  }
