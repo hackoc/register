@@ -2,6 +2,7 @@ import Head from 'next/head'
 import styles from '../styles/Start.module.css'
 import Icon from '@hackclub/icons'
 import Modal from '../components/Modal'
+import Text from '../components/Inputs/Text.js';
 import Question from '../components/Question';
 import { questions, sections } from '../lib/questions.js';
 import { useEffect, useState } from 'react';
@@ -86,9 +87,27 @@ export default function Home() {
             </h1>
             {sections.map((section, i) => {
                 return (
-                    <>
-                    {i != 0 && 
-                    <hr />}
+                  <div style={{
+                    padding: '1rem',
+                    position: 'relative'
+                  }}>
+                    <div style={{
+                      width: '100%',
+                      height: '100%',
+                      position: 'absolute',
+                      filter: 'opacity(0.6)',
+                      top: '0px',
+                      left: '0px',
+                      zIndex: '10',
+                      background: i % 4 === 1 ? 'url("https://cloud-2zvigj1zd-hack-club-bot.vercel.app/0water.jpeg")' : undefined,
+                      backgroundSize: 'cover',
+  
+                    }}></div>
+                    <div style={{
+                      position: 'relative',
+                      zIndex: '20',
+                    }}>
+
 
 <center>
                     <div style={{
@@ -102,14 +121,45 @@ export default function Home() {
                     <p>{section.description}</p>
             </div>
             </center>
+            <center>
+            <div style={{
+              width: '500px',
+              maxWidth: 'calc(100vw - 60px)',
+              textAlign: 'left',
+              marginLeft: '20px',
+              marginTop: i == 0 ? '6rem' : '2rem'
+            }}>
                     {
-                        section.questions.map(question => {
+                        section.questions.map((question, i) => {
                             return (
-                                <Question question={question} />
+                              <>
+                              <div style={{
+                                marginBottom: '3rem',
+                                marginTop: '3rem',
+                              }}>
+                              <Text {...{
+                                name: question.name,
+                                description: question.description,
+                                help: question.help,
+                                width: '400px',
+                                type: question.type,
+                                placeholder: question.placeholder,
+                                validate: question.verify,
+                                required: question.required
+                              }} />
+                              </div>
+                                </>
+                                
                             )
+                            
                         })
+                      
                     }
-                    </>
+                    
+                    </div>
+                    </center>
+                    </div>
+                    </div>
                 );
             })}
       </main>
