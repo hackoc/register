@@ -194,9 +194,10 @@
     border-width: 2px;
     border-style: solid;
     font-size: 1em;
+    cursor: default;
     font-weight: 500;
     font-family: Inter;
-    z-index: 10;
+    z-index: 30;
     background-color: white;
 
     /* display: none; */
@@ -209,32 +210,20 @@
 
 .wrapper:focus-within > div.content ~ .dropdown {
     display: block;
-    height: 48px;
+    height: 150px;
     filter: opacity(1);
 
     pointer-events: all;
     
 }
 
-.wrapper:focus-within > div.content ~ .dropdown:has(> .chipOption) {
-    height: 48px;
-}
-
-.wrapper:focus-within > div.content ~ .dropdown:has(> .chipOption:nth-child(2)) {
-    height: 90px;
-}
-
 .wrapper:focus-within > div.content ~ .dropdown:has(> .chipOption:nth-child(3)) {
-    height: 132px;
-}
-
-.wrapper:focus-within > div.content ~ .dropdown:has(> .chipOption:nth-child(4)) {
-    height: 192px;
+    height: 220px;
 }
 
 .chip {
     background: rgb(250, 210, 156);
-    border-radius: 1rem;
+    border-radius: 12px;
     padding: 0.25rem 0.4rem;
     font-size: 0.85rem;
     padding-right: 24px;
@@ -290,6 +279,8 @@
 
 .dropdown .chip {
     padding-right: 0.4rem;
+    display: inline-block;
+    border-radius: 12px;
 }
 
 .chip:hover::after {

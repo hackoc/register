@@ -138,9 +138,10 @@ export default function Home() {
                                 marginBottom: '3rem',
                                 marginTop: '3rem',
                               }}>
-                                {question.special == 'multiSelect' ?
+                                {(question.special == 'multiSelect' || question.special == 'select') ?
                                   <Select {...{
                                     options: question.options,
+                                    multi: question.special == 'multiSelect',
                                     name: question.name,
                                     description: question.description,
                                     help: question.help,

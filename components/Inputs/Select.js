@@ -6,7 +6,7 @@ function defaultValidate (text) {
 }
 
 export default function Select (props) {
-    const { options = [], special, validate: _validate, name, description, help, placeholder, data, setData, initialData, wrapperClass, width, margin, type, id: _id, required } = props;
+    const { multi, options = [], special, validate: _validate, name, description, help, placeholder, data, setData, initialData, wrapperClass, width, margin, type, id: _id, required } = props;
 
     const id = _id ?? name?.toLowerCase()?.split(' ')?.join('-')?.split('')?.filter(a => `abcdefghijklmnopqrstuvwxyz1234567890-_`.includes(a))?.join('') ?? 'error';
     const validate = data => (_validate ?? defaultValidate)() && (required ? data?.length : true);
@@ -18,7 +18,8 @@ export default function Select (props) {
     const inputRef = useRef(null);
     const dropdownRef = useRef(null);
 
-    const multiSelect = options.filter(opt => opt?.custom).length > 0;
+    const custom = options.filter(opt => opt?.custom).length > 0;
+    const multiSelect = multi;
 
     const presetChips = options.filter(opt => !opt?.custom).map((opt, i) => ({
         name: opt,
@@ -84,14 +85,22 @@ export default function Select (props) {
                             let theseChips = JSON.parse(JSON.stringify(chips));
                             theseChips.pop();
                             setChips(theseChips);
-                        } else if ((e.key == 'Enter' || e.key == ',') && multiSelect) {
+                        } else if ((e.key == 'Enter' || e.key == ',')) {
                             if (e.key == ',') e.preventDefault();
                             let theseChips = JSON.parse(JSON.stringify(chips));
-                            theseChips.push({
+                            if (!displayedPresetChips.length && !custom) return;
+                            if (multiSelect) theseChips.push({
                                 name: displayedPresetChips.length ? displayedPresetChips[0].name : localData.trim(),
                                 color: displayedPresetChips.length ? displayedPresetChips[0].color :  activeColor,
                                 id: localData.toLowerCase().split(' ').join('-')
                             });
+                            else theseChips = [
+                                {
+                                    name: displayedPresetChips.length ? displayedPresetChips[0].name : localData.trim(),
+                                    color: displayedPresetChips.length ? displayedPresetChips[0].color :  activeColor,
+                                    id: localData.toLowerCase().split(' ').join('-')
+                                }
+                            ];
                             setActiveColor(Math.random() * 6 | 0);
                             setChips(theseChips);
                             e.target.value = '';
@@ -115,18 +124,25 @@ export default function Select (props) {
                             let thesePresetChips = JSON.parse(JSON.stringify(presetChips));
                             let theseChips = chips;
                             let thisChip = thesePresetChips.splice(index, 1)[0];
-                            theseChips.push({
+                            if (multiSelect) theseChips.push({
                                 name: thisChip.name,
                                 color: thisChip.color,
                                 id: Math.floor(Math.random() * 10000) + '-' + Date.now()
                             });
+                            else theseChips = [
+                                {
+                                    name: thisChip.name,
+                                    color: thisChip.color,
+                                    id: Math.floor(Math.random() * 10000) + '-' + Date.now()
+                                }
+                            ];
                             setChips(theseChips);
                             forceUpdate();
                         }}>
                             <span data-color={chip.color} className={styles.chip} key={Math.floor(Math.random() * 10000) + '-' + Date.now()}>{chip.name}</span>
                         </div>
                     ))}
-                    {localData?.length ? 
+                    {(localData?.length && custom) ? 
                         <div className={styles.chipOption} onMouseDown={e => {
                             let theseChips = JSON.parse(JSON.stringify(chips));
                             theseChips.push({
