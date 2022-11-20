@@ -16,6 +16,7 @@ export default function Select (props) {
     const [partiallyValid, setPartiallyValid] = useState(false);
 
     const inputRef = useRef(null);
+    const dropdownRef = useRef(null);
 
     const multiSelect = options.filter(opt => opt?.custom).length > 0;
 
@@ -34,7 +35,6 @@ export default function Select (props) {
     const [counter, setCounter] = useState(Math.random() * 6 | 0);
 
     useEffect(() => {
-        console.log('a')
         let excluded = presetChips.filter(presetChip => !chips.map(chip => chip.name).includes(presetChip.name));
         if (localData?.length) {
             setDisplayedPresetChips(excluded.filter(chip => chip.name.toLowerCase().split(' ').join('').includes(localData.toLowerCase().split(' ').join(''))));
@@ -47,7 +47,14 @@ export default function Select (props) {
         setCounter(counter + 1);
     }
 
-    console.log(displayedPresetChips);
+    function startEdits () {
+        setValid(false);
+        setPartiallyValid(validate(chips));
+    }
+
+    function finishEdits () {
+        setValid(validate(chips));
+    }
 
     return (
         <>
@@ -58,9 +65,9 @@ export default function Select (props) {
             }}>
                 <label for={id}>{name} {help && <span><span aria-label={help} tabIndex={0}>?</span></span>}</label>
                 <p>{description}</p>
-                <div className={styles.content} onClick={() => inputRef.current.focus()}>
+                <div className={styles.content} onBlur={finishEdits} onClick={() => (inputRef.current.focus(), dropdownRef.current.scrollTop = 0, startEdits())}>
                     {chips.map(chip => (
-                        <span data-color={chip.color} className={styles.chip} key={chip.id} onClick={e => {
+                        <span onMouseDown={e => e.preventDefault()} data-color={chip.color} className={styles.chip} key={chip.id} onClick={e => {
                             let index = 0;
                             chips.forEach((c, i) => (c.id == chip.id ? index = i : 0));
                             let theseChips = JSON.parse(JSON.stringify(chips));
@@ -68,7 +75,7 @@ export default function Select (props) {
                             setChips(theseChips);
                         }}>{chip.name}</span>
                     ))}
-                    <input onChange={e => {
+                    <input placeholder={chips?.length == 0 ? 'Select' : ''} onChange={e => {
                         setLocalData(e.target.value);
                         if (setData instanceof Function) setData(e.target.value);
                         setPartiallyValid(validate(e.target.value));
@@ -99,9 +106,10 @@ export default function Select (props) {
                     }} ref={inputRef} value={localData}></input>
                 </div>
                 <span>✓</span>
-                <div className={styles.dropdown} tabIndex="-1" onFocus={() => inputRef.current.focus()}>
+                <div className={styles.dropdown} ref={dropdownRef} tabIndex="-1" onFocus={() => inputRef.current.focus()} onMouseDown={startEdits}>
                     {displayedPresetChips.map(chip => (
                         <div className={styles.chipOption} onMouseDown={e => {
+                            e.preventDefault();
                             let index = 0;
                             presetChips.forEach((c, i) => (c.name == chip.name ? index = i : 0));
                             let thesePresetChips = JSON.parse(JSON.stringify(presetChips));

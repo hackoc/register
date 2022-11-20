@@ -35,8 +35,12 @@
     border-color: #b7b7b8;
 }
 
-.wrapper.isValid > span {
+.wrapper.isValid:not(:focus-within) > span {
     filter: opacity(1);
+}
+
+.wrapper.isValid:focus-within > span {
+    filter: opacity(0.6) grayscale(0.6);
 }
 
 .wrapper.isPartiallyValid > span {
@@ -73,6 +77,11 @@
     cursor: text;
 }
 
+.wrapper > .content:has(> .chip) ~ span {
+    bottom: 12px;
+    right: 12px;
+}
+
 .wrapper > span {
     color: #21ca71;
     font-weight: 700;
@@ -83,7 +92,7 @@
     right: 10px;
     bottom: 8px;
     pointer-events: none;
-    transition: 0.1s;
+    transition: 0.1s filter;
 }
 
 .wrapper div.content::placeholder {
@@ -194,22 +203,40 @@
     height: 0px;
     filter: opacity(0);
 
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 
 }
 
 .wrapper:focus-within > div.content ~ .dropdown {
     display: block;
-    height: 200px;
+    height: 48px;
     filter: opacity(1);
 
     pointer-events: all;
     
 }
 
+.wrapper:focus-within > div.content ~ .dropdown:has(> .chipOption) {
+    height: 48px;
+}
+
+.wrapper:focus-within > div.content ~ .dropdown:has(> .chipOption:nth-child(2)) {
+    height: 90px;
+}
+
+.wrapper:focus-within > div.content ~ .dropdown:has(> .chipOption:nth-child(3)) {
+    height: 132px;
+}
+
+.wrapper:focus-within > div.content ~ .dropdown:has(> .chipOption:nth-child(4)) {
+    height: 192px;
+}
+
 .chip {
     background: rgb(250, 210, 156);
     border-radius: 1rem;
-    padding: 0.25rem;
+    padding: 0.25rem 0.4rem;
+    font-size: 0.85rem;
     padding-right: 24px;
     position: relative;
     cursor: pointer;
@@ -257,13 +284,21 @@
     transition: 0.2s all;
 }
 
+.dropdown .chip::after {
+    display: none;
+}
+
+.dropdown .chip {
+    padding-right: 0.4rem;
+}
+
 .chip:hover::after {
     color: rgba(10, 10, 10, 0.922);
 }
 
 .chipOption {
     display: block;
-    padding: 0.75rem 0.5rem;
+    padding: 0.65rem 0.4rem;
     cursor: pointer;
 }
 
