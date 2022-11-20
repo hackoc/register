@@ -2,7 +2,7 @@ import { useState, uesEffet, useEffect } from 'react';
 import styles from './Text.module.css';
 
 function defaultValidate (text) {
-    return text.length;
+    return text?.length;
 }
 
 export default function Text (props) {

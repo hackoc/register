@@ -1,17 +1,37 @@
-.wrapper input {
+.wrapper div.content > * {
+    outline: none;
+    display: inline-block;  
+    border: none;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: system-ui, Inter;
+}
+
+.wrapper div.content input {
+    flex-grow: 1;
+    min-width: 100px;
+    flex: 0 0 auto;
+}
+
+.wrapper div.content {
     width: 100%;
     border-radius: 0.25em;
     border-color: #d3d3d4;
     transition: 0.2s;
     border-width: 2px;
     border-style: solid;
-    padding: 0.5em;
     font-size: 1em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.5rem;
     font-weight: 500;
     font-family: system-ui, Inter;
+    z-index: 20;
+    position: relative;
 }
 
-.wrapper input:hover {
+.wrapper div.content:hover {
     border-color: #b7b7b8;
 }
 
@@ -23,7 +43,7 @@
     filter: opacity(0.6) grayscale(0.6);
 }
 
-.wrapper input[type="date"] + span {
+.wrapper div.content[type="date"] + span {
     transform: translate(-26px, -1px);
 }
 
@@ -40,7 +60,7 @@
     font-weight: 500;
 }
 
-.wrapper input:focus {
+.wrapper div.content:focus-within {
     outline: none;
     border-color: var(--orange);
     box-shadow: 0 0 0 2px rgba(var(--orange-3-values), 0.2)
@@ -50,6 +70,7 @@
     min-width: 200px;
     font-family: system-ui, Inter;
     position: relative;
+    cursor: text;
 }
 
 .wrapper > span {
@@ -65,7 +86,7 @@
     transition: 0.1s;
 }
 
-.wrapper input::placeholder {
+.wrapper div.content::placeholder {
     color: rgb(157, 157, 157);
     opacity: 1;
 }
@@ -82,6 +103,9 @@
     display: inline-block;
     position: relative;
     transform: translateY(-2px);
+}
+
+.wrapper > label > span, .chip {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
     -khtml-user-select: none; /* Konqueror HTML */
@@ -89,7 +113,6 @@
     -ms-user-select: none; /* Internet Explorer/Edge */
     user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
-
 }
 
 .wrapper > label > span > span {
@@ -148,4 +171,101 @@
 
 .wrapper > label > span:focus-within {
     background: rgba(51, 124, 227, 0.2);
+}
+
+.dropdown {
+    position: absolute;
+    top: calc( 100% - 0px );
+    left: 0%;
+    width: 100%;
+    overflow-y: auto;
+    border-radius: 0.25em;
+    border-color: #d3d3d4;
+    transition: 0.15s ease-out;
+    border-width: 2px;
+    border-style: solid;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: Inter;
+    z-index: 10;
+
+    /* display: none; */
+    height: 0px;
+    filter: opacity(0);
+
+
+}
+
+.wrapper:focus-within > div.content ~ .dropdown {
+    display: block;
+    height: 200px;
+    filter: opacity(1);
+
+    pointer-events: all;
+    
+}
+
+.chip {
+    background: rgb(250, 210, 156);
+    border-radius: 1rem;
+    padding: 0.25rem;
+    padding-right: 24px;
+    position: relative;
+    cursor: pointer;
+}
+
+.chip[data-color="1"] {
+    background: rgb(251, 154, 154);
+}
+
+.chip[data-color="2"] {
+    background: rgb(247, 164, 235);
+}
+
+.chip[data-color="3"] {
+    background: #dca7ff;
+}
+
+.chip[data-color="4"] {
+    background: rgb(160, 163, 244);
+}
+
+.chip[data-color="5"] {
+    background: rgb(134, 234, 243);
+}
+
+.chip[data-color="6"] {
+    background: rgb(156, 243, 134);
+}
+
+.chip::after {
+    content: "×";
+    position: absolute;
+    right: 0.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    vertical-align: middle;
+    color: rgba(26, 26, 26, 0.651);
+    height: 1.25rem;
+    width: 1.25rem;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.2s all;
+}
+
+.chip:hover::after {
+    color: rgba(10, 10, 10, 0.922);
+}
+
+.chipOption {
+    display: block;
+    padding: 0.75rem 0.5rem;
+    cursor: pointer;
+}
+
+.chipOption:hover {
+    background: #f3f3f3;
 }
