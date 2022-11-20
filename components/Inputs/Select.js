@@ -6,7 +6,7 @@ function defaultValidate (text) {
 }
 
 export default function Select (props) {
-    const { options, special, multiSelect = true, validate: _validate, name, description, help, placeholder, data, setData, initialData, wrapperClass, width, margin, type, id: _id, required } = props;
+    const { options = [], special, validate: _validate, name, description, help, placeholder, data, setData, initialData, wrapperClass, width, margin, type, id: _id, required } = props;
 
     const id = _id ?? name?.toLowerCase()?.split(' ')?.join('-')?.split('')?.filter(a => `abcdefghijklmnopqrstuvwxyz1234567890-_`.includes(a))?.join('') ?? 'error';
     const validate = data => (_validate ?? defaultValidate)() && (required ? data?.length : true);
@@ -17,32 +17,12 @@ export default function Select (props) {
 
     const inputRef = useRef(null);
 
-    const presetChips = [
-        {
-            name: 'A',
-            color: '0'
-        },
-        {
-            name: 'B',
-            color: '1'
-        },
-        {
-            name: 'C',
-            color: '2'
-        },
-        {
-            name: 'D',
-            color: '3'
-        },
-        {
-            name: 'E',
-            color: '4'
-        },
-        {
-            name: 'F',
-            color: '5'
-        }
-    ];
+    const multiSelect = options.filter(opt => opt?.custom).length > 0;
+
+    const presetChips = options.filter(opt => !opt?.custom).map((opt, i) => ({
+        name: opt,
+        color: i % 7,
+    }));
 
     const [displayedPresetChips, setDisplayedPresetChips] = useState(presetChips);
 
@@ -101,8 +81,8 @@ export default function Select (props) {
                             if (e.key == ',') e.preventDefault();
                             let theseChips = JSON.parse(JSON.stringify(chips));
                             theseChips.push({
-                                name: localData.trim(),
-                                color: activeColor,
+                                name: displayedPresetChips.length ? displayedPresetChips[0].name : localData.trim(),
+                                color: displayedPresetChips.length ? displayedPresetChips[0].color :  activeColor,
                                 id: localData.toLowerCase().split(' ').join('-')
                             });
                             setActiveColor(Math.random() * 6 | 0);
@@ -120,22 +100,6 @@ export default function Select (props) {
                 </div>
                 <span>✓</span>
                 <div className={styles.dropdown} tabIndex="-1" onFocus={() => inputRef.current.focus()}>
-                    {localData?.length ? 
-                        <div className={styles.chipOption} onMouseDown={e => {
-                            let theseChips = JSON.parse(JSON.stringify(chips));
-                            theseChips.push({
-                                name: localData,
-                                color: activeColor,
-                                id: Math.floor(Math.random() * 10000) + '-' + Date.now()
-                            });
-                            setChips(theseChips);
-                            setActiveColor(Math.random() * 6 | 0);
-                            setLocalData('');
-                            forceUpdate();
-                        }}>
-                            Add <span data-color={activeColor} className={styles.chip} key={Math.floor(Math.random() * 10000) + '-' + Date.now()}>{localData}</span>
-                        </div>
-                    : null}
                     {displayedPresetChips.map(chip => (
                         <div className={styles.chipOption} onMouseDown={e => {
                             let index = 0;
@@ -154,6 +118,22 @@ export default function Select (props) {
                             <span data-color={chip.color} className={styles.chip} key={Math.floor(Math.random() * 10000) + '-' + Date.now()}>{chip.name}</span>
                         </div>
                     ))}
+                    {localData?.length ? 
+                        <div className={styles.chipOption} onMouseDown={e => {
+                            let theseChips = JSON.parse(JSON.stringify(chips));
+                            theseChips.push({
+                                name: localData,
+                                color: activeColor,
+                                id: Math.floor(Math.random() * 10000) + '-' + Date.now()
+                            });
+                            setChips(theseChips);
+                            setActiveColor(Math.random() * 6 | 0);
+                            setLocalData('');
+                            forceUpdate();
+                        }}>
+                            Add <span data-color={activeColor} className={styles.chip} key={Math.floor(Math.random() * 10000) + '-' + Date.now()}>{localData}</span>
+                        </div>
+                    : null}
                 </div>
             </div>
         </>

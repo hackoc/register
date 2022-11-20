@@ -188,6 +188,7 @@
     font-weight: 500;
     font-family: Inter;
     z-index: 10;
+    background-color: white;
 
     /* display: none; */
     height: 0px;
@@ -266,6 +267,14 @@
     cursor: pointer;
 }
 
+.dropdown:not(:hover) .chipOption:first-child {
+    background: #f3f3f3;
+}
+
 .chipOption:hover {
     background: #f3f3f3;
+}
+
+.chipOption:first-child:hover {
+    background: #ebebeb;
 }

@@ -3,6 +3,7 @@ import styles from '../styles/Start.module.css'
 import Icon from '@hackclub/icons'
 import Modal from '../components/Modal'
 import Text from '../components/Inputs/Text.js';
+import Select from '../components/Inputs/Select.js';
 import Question from '../components/Question';
 import { questions, sections } from '../lib/questions.js';
 import { useEffect, useState } from 'react';
@@ -137,16 +138,30 @@ export default function Home() {
                                 marginBottom: '3rem',
                                 marginTop: '3rem',
                               }}>
-                              <Text {...{
-                                name: question.name,
-                                description: question.description,
-                                help: question.help,
-                                width: '400px',
-                                type: question.type,
-                                placeholder: question.placeholder,
-                                validate: question.verify,
-                                required: question.required
-                              }} />
+                                {question.special == 'multiSelect' ?
+                                  <Select {...{
+                                    options: question.options,
+                                    name: question.name,
+                                    description: question.description,
+                                    help: question.help,
+                                    width: '400px',
+                                    type: question.type,
+                                    placeholder: question.placeholder,
+                                    validate: question.verify,
+                                    required: question.required
+                                  }} />
+                                :
+                                  <Text {...{
+                                    name: question.name,
+                                    description: question.description,
+                                    help: question.help,
+                                    width: '400px',
+                                    type: question.type,
+                                    placeholder: question.placeholder,
+                                    validate: question.verify,
+                                    required: question.required
+                                  }} />
+                                }
                               </div>
                                 </>
                                 
