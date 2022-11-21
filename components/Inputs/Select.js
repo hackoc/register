@@ -60,7 +60,7 @@ function looseMatch (str1, str2) {
     return modify(str1) == modify(str2);
 }
 
-export function Chip ({ chipData: chip, forceUpdate, chips, setChips, multiSelect, presetChips, localData, isCustom, isSelected, resetSelected }) {
+export function Chip ({ chipData: chip, forceUpdate, chips, setChips, multiSelect, presetChips, localData, isCustom, isSelected, resetSelected, selectThisChip }) {
     const selfRef = useRef(null);
 
     useEffect(() => {
@@ -71,7 +71,7 @@ export function Chip ({ chipData: chip, forceUpdate, chips, setChips, multiSelec
     }, [isSelected]);
 
     return (
-        <div ref={selfRef} className={styles.chipOption} style={isSelected ? { background: 'red' } : {}} onMouseDown={e => {
+        <div onMouseOver={selectThisChip} ref={selfRef} className={[styles.chipOption, isSelected ? styles.selectedChip : ''].join(' ')} onMouseDown={e => {
             if (isCustom) {
                 e.preventDefault();
                 resetSelected(0);
@@ -261,7 +261,8 @@ export default function Select (props) {
                         localData,
                         isCustom,
                         resetSelected,
-                        isSelected: selected == i
+                        isSelected: selected == i,
+                        selectThisChip: () => setSelected(i)
                     }} />)}
                 </div>
             </div>

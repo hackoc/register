@@ -303,14 +303,18 @@
     cursor: pointer;
 }
 
-.dropdown:not(:hover) .chipOption:first-child {
+.dropdown:not(:hover):not(> .selectedChip) .chipOption:first-child {
     background: #f3f3f3;
 }
 
-.chipOption:hover {
+.selectedChip {
     background: #f3f3f3;
 }
 
-.chipOption:first-child:hover {
+.dropdown:not(> .selectedChip) .chipOption:hover {
+    background: #f3f3f3;
+}
+
+.dropdown:not(> .selectedChip) .chipOption:first-child:hover, .chipOption:first-child.selectedChip {
     background: #ebebeb;
 }
