@@ -304,15 +304,15 @@
 }
 
 .dropdown:not(:hover):not(> .selectedChip) .chipOption:first-child {
-    background: #f3f3f3;
+    background: #ebebeb;
 }
 
 .selectedChip {
-    background: #f3f3f3;
+    background: #ebebeb;
 }
 
 .dropdown:not(> .selectedChip) .chipOption:hover {
-    background: #f3f3f3;
+    background: #ebebeb;
 }
 
 .dropdown:not(> .selectedChip) .chipOption:first-child:hover, .chipOption:first-child.selectedChip {
