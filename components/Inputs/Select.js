@@ -60,7 +60,7 @@ function looseMatch (str1, str2) {
     return modify(str1) == modify(str2);
 }
 
-export function Chip ({ chipData: chip, forceUpdate, chips, setChips, multiSelect, presetChips, localData, isCustom, isSelected, resetSelected, selectThisChip, setActiveColor }) {
+export function Chip ({ chipData: chip, forceUpdate, chips, setChips, multiSelect, presetChips, localData, isCustom, isSelected, resetSelected, selectThisChip, setActiveColor, setLocalData }) {
     const selfRef = useRef(null);
 
     useEffect(() => {
@@ -263,7 +263,8 @@ export default function Select (props) {
                         resetSelected,
                         isSelected: selected == i,
                         selectThisChip: () => setSelected(i),
-                        setActiveColor
+                        setActiveColor,
+                        setLocalData
                     }} />)}
                 </div>
             </div>
