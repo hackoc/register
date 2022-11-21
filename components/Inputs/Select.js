@@ -164,7 +164,7 @@ export default function Select (props) {
         let validationStatus = validate(chips);
         setValid(!editing && validationStatus);
         setPartiallyValid(editing && validationStatus);
-    }, [chips, editing]);
+    }, [chips, editing, counter]);
 
     const displayedChips = [
         ...(displayedPresetChips.filter(chip => looseMatch(chip.name, localData))[0] ? [displayedPresetChips.filter(chip => looseMatch(chip.name, localData))[0]] : []).map(chip => ({ chip })),
@@ -203,7 +203,6 @@ export default function Select (props) {
                     <input placeholder={chips?.length == 0 ? 'Select' : ''} onChange={e => {
                         setLocalData(e.target.value);
                         if (setData instanceof Function) setData(e.target.value);
-                        setPartiallyValid(validate(e.target.value));
                     }} onKeyDown={e => {
                         if (e.key == 'Backspace' && e.target.value?.length == 0) {
                             let theseChips = JSON.parse(JSON.stringify(chips));
@@ -211,7 +210,8 @@ export default function Select (props) {
                             startEdits();
                             setChips(theseChips);
                         } else if ((e.key == 'Enter' || e.key == ',')) {
-                            let activeChip = displayedChips[selected].chip;
+                            let activeChip = displayedChips[selected]?.chip;
+                            if (!activeChip) return;
                             if (e.key == ',') e.preventDefault();
                             let theseChips = JSON.parse(JSON.stringify(chips));
                             if (!displayedPresetChips.length && !custom) return;
@@ -236,9 +236,7 @@ export default function Select (props) {
                             if (setData instanceof Function) setData('');
                         }
                     }}
-                    name={id} id={id} type={type} onFocus={e => {
-                        setValid(false);
-                    }} ref={inputRef} value={localData}></input>
+                    name={id} id={id} type={type} ref={inputRef} value={localData}></input>
                 </div>
                 <span>✓</span>
                 <div className={styles.dropdown} ref={dropdownRef} tabIndex="-1" onFocus={() => inputRef.current.focus()} onMouseDown={startEdits}>
