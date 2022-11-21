@@ -71,7 +71,7 @@ export function Chip ({ chipData: chip, forceUpdate, chips, setChips, multiSelec
     }, [isSelected]);
 
     return (
-        <div onMouseMove={selectThisChip} ref={selfRef} className={[styles.chipOption, isSelected ? styles.selectedChip : ''].join(' ')} onMouseDown={e => {
+        <div onMouseMove={selectThisChip} ref={selfRef} className={[styles.chipOption, isSelected ? styles.selectedChip : ''].join(' ')} onMouseDown={e => e.preventDefault()} onMouseUp={e => {
             if (isCustom) {
                 e.preventDefault();
                 resetSelected(0);

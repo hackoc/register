@@ -232,7 +232,8 @@
 }
 
 .chip {
-    background: rgb(250, 210, 156);
+    /* background: rgb(250, 210, 156); */
+    background: #ffe2dd;
     border-radius: 12px;
     padding: 0.25rem 0.4rem;
     font-size: 0.85rem;
@@ -242,27 +243,33 @@
 }
 
 .chip[data-color="1"] {
-    background: rgb(251, 154, 154);
+    /* background: rgb(251, 154, 154); */
+    background: #fbdec9;
 }
 
 .chip[data-color="2"] {
-    background: rgb(247, 164, 235);
+    /* background: rgb(247, 164, 235); */
+    background: #feecc8;
 }
 
 .chip[data-color="3"] {
-    background: #dca7ff;
+    /* background: #dca7ff; */
+    background: #dbeddb;
 }
 
 .chip[data-color="4"] {
-    background: rgb(160, 163, 244);
+    /* background: rgb(160, 163, 244); */
+    background: #d3e5ef;
 }
 
 .chip[data-color="5"] {
-    background: rgb(134, 234, 243);
+    /* background: rgb(134, 234, 243); */
+    background: #e8deee;
 }
 
 .chip[data-color="6"] {
-    background: rgb(156, 243, 134);
+    /* background: rgb(156, 243, 134); */
+    background: #f5e1e9;
 }
 
 .chip .close {
@@ -304,17 +311,21 @@
 }
 
 .dropdown:not(:hover):not(> .selectedChip) .chipOption:first-child {
-    background: #ebebeb;
+    background: #efefef;
 }
 
 .selectedChip {
-    background: #ebebeb;
+    background: #efefef;
 }
 
 .dropdown:not(> .selectedChip) .chipOption:hover {
-    background: #ebebeb;
+    background: #efefef;
 }
 
 .dropdown:not(> .selectedChip) .chipOption:first-child:hover, .chipOption:first-child.selectedChip {
-    background: #ebebeb;
+    background: #efefef;
+}
+
+.chipOption:active {
+    background: #dfdfde!important;
 }
