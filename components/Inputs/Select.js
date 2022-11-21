@@ -190,7 +190,7 @@ export default function Select (props) {
                 boxSizing: 'border-box'
             }}>
                 <label for={id}>{name} {help && <span><span aria-label={help} tabIndex={0}>?</span></span>}</label>
-                <p>{description} {selected}</p>
+                <p>{description}</p>
                 <div className={styles.content} onBlur={finishEdits} onClick={e => (e.preventDefault(), inputRef.current.focus(), dropdownRef.current.scrollTop = 0, startEdits(), setSelected(0))} onKeyDown={e => {
                     if (e.key == 'ArrowDown') {
                         setSelected((selected + 1 + displayedChips.length) % displayedChips.length);
