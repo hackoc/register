@@ -1,8 +1,8 @@
 import { useState, uesEffet, useEffect, useRef } from 'react';
 import styles from './Select.module.css';
 
-function defaultValidate (text) {
-    return text?.length;
+function defaultValidate (chips) {
+    return chips?.length;
 }
 
 function isVisible (ele, container) {
@@ -60,12 +60,11 @@ function looseMatch (str1, str2) {
     return modify(str1) == modify(str2);
 }
 
-export function Chip ({ chipData: chip, forceUpdate, chips, setChips, multiSelect, presetChips, localData, isCustom, isSelected, resetSelected, selectThisChip, setActiveColor, setLocalData }) {
+export function Chip ({ chipData: chip, forceUpdate, chips, setChips, multiSelect, presetChips, localData, isCustom, isSelected, resetSelected, selectThisChip, setActiveColor, setLocalData, startEdits }) {
     const selfRef = useRef(null);
 
     useEffect(() => {
         if (!isVisible(selfRef.current)) {
-            console.log(' .   fgd f')
             scrollParentToChild(selfRef.current);
         }
     }, [isSelected]);
@@ -85,6 +84,7 @@ export function Chip ({ chipData: chip, forceUpdate, chips, setChips, multiSelec
                 setActiveColor(Math.random() * 6 | 0);
                 setLocalData('');
                 forceUpdate();
+                startEdits();
             } else {
                 e.preventDefault();
                 resetSelected(0);
@@ -107,6 +107,7 @@ export function Chip ({ chipData: chip, forceUpdate, chips, setChips, multiSelec
                 ];
                 setChips(theseChips);
                 forceUpdate();
+                startEdits();
             }
         }}>
             {isCustom && 'Add '} <span data-color={chip.color} className={styles.chip} key={Math.floor(Math.random() * 10000) + '-' + Date.now()}>{chip.name} <span className={styles.close}>×</span></span>
@@ -159,18 +160,25 @@ export default function Select (props) {
         setCounter(counter + 1);
     }
 
+    const [editing, setEditing] = useState(false);
+
     function startEdits () {
-        setValid(false);
-        setPartiallyValid(validate(chips));
+        setEditing(true);
     }
 
     function finishEdits () {
-        setValid(validate(chips));
+        setEditing(false);
     }
 
     function resetSelected () {
         setSelected(0);
     }
+
+    useEffect(() => {
+        let validationStatus = validate(chips);
+        setValid(!editing && validationStatus);
+        setPartiallyValid(editing && validationStatus);
+    }, [chips, editing]);
 
     const displayedChips = [
 
@@ -191,13 +199,11 @@ export default function Select (props) {
             }}>
                 <label for={id}>{name} {help && <span><span aria-label={help} tabIndex={0}>?</span></span>}</label>
                 <p>{description}</p>
-                <div className={styles.content} onBlur={finishEdits} onClick={e => (e.preventDefault(), inputRef.current.focus(), dropdownRef.current.scrollTop = 0, startEdits(), setSelected(0))} onKeyDown={e => {
+                <div className={styles.content} onFocus={startEdits} onBlur={finishEdits} onClick={e => (e.preventDefault(), inputRef.current.focus(), dropdownRef.current.scrollTop = 0, startEdits(), setSelected(0))} onKeyDown={e => {
                     if (e.key == 'ArrowDown') {
                         setSelected((selected + 1 + displayedChips.length) % displayedChips.length);
-                        console.log(e.key, e.target.contains(document.activeElement));
                     } else if (e.key == 'ArrowUp') {
                         setSelected((selected - 1 + displayedChips.length) % displayedChips.length);
-                        console.log(e.key, e.target.contains(document.activeElement));
                     }
                 }}>
                     {chips.map(chip => (
@@ -217,10 +223,10 @@ export default function Select (props) {
                         if (e.key == 'Backspace' && e.target.value?.length == 0) {
                             let theseChips = JSON.parse(JSON.stringify(chips));
                             theseChips.pop();
+                            startEdits();
                             setChips(theseChips);
                         } else if ((e.key == 'Enter' || e.key == ',')) {
                             let activeChip = displayedChips[selected].chip;
-                            console.log({ activeChip });
                             if (e.key == ',') e.preventDefault();
                             let theseChips = JSON.parse(JSON.stringify(chips));
                             if (!displayedPresetChips.length && !custom) return;
@@ -240,13 +246,12 @@ export default function Select (props) {
                             setChips(theseChips);
                             e.target.value = '';
                             setLocalData('');
+                            startEdits();
                             resetSelected();
                             if (setData instanceof Function) setData('');
                         }
                     }}
-                    name={id} id={id} type={type} onBlur={() => {
-                        setValid(validate(localData));
-                    }} onFocus={e => {
+                    name={id} id={id} type={type} onFocus={e => {
                         setValid(false);
                     }} ref={inputRef} value={localData}></input>
                 </div>
@@ -264,7 +269,8 @@ export default function Select (props) {
                         isSelected: selected == i,
                         selectThisChip: () => setSelected(i),
                         setActiveColor,
-                        setLocalData
+                        setLocalData,
+                        startEdits
                     }} />)}
                 </div>
             </div>

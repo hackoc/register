@@ -76,8 +76,36 @@
     position: relative;
 }
 
-.content:not(:focus-within), .content:not(:focus-within) * {
+.content:not(:has(> .chip)):not(:focus-within), .content:not(:has(> .chip)):not(:focus-within) * {
     cursor: pointer!important;
+}
+
+.content:has(> .chip) {
+    cursor: text;
+}
+
+.content:has(> .chip)::after {
+    content: '▼';
+    position: absolute;
+    top: 50%;
+    font-weight: 200;
+    right: 10px;
+    transform: translateY(-50%) scale(0.75);
+    color: #767676;
+    filter: opacity(0);
+    transition: 0.2s all;
+}
+
+.content:not(:has(> .chip))::after {
+    content: '▼';
+    position: absolute;
+    top: 50%;
+    font-weight: 200;
+    right: 10px;
+    transform: translateY(-50%) scale(0.75);
+    color: #767676;
+    filter: opacity(1)!important;
+    transition: 0.2s all;
 }
 
 .content:focus-within {
