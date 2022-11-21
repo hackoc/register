@@ -14,44 +14,30 @@ function isVisible (ele, container) {
     const containerTop = container.scrollTop;
     const containerBottom = containerTop + container.clientHeight;
 
-    // The element is fully visible in the container
     return (
         (eleTop >= containerTop && eleBottom <= containerBottom) ||
-        // Some part of the element is visible in the container
         (eleTop < containerTop && containerTop < eleBottom) ||
         (eleTop < containerBottom && containerBottom < eleBottom)
     );
 }
 
 function scrollParentToChild (child, parent) {
-    // Where is the parent on page
     if (!parent) parent = child.parentElement;
-    var parentRect = parent.getBoundingClientRect();
-    // What can you see?
-    var parentViewableArea = {
+    let parentRect = parent.getBoundingClientRect();
+    let parentViewableArea = {
         height: parent.clientHeight,
         width: parent.clientWidth
     };
     
-    // Where is the child
-    var childRect = child.getBoundingClientRect();
-    // Is the child viewable?
-    var isViewable = (childRect.top >= parentRect.top) && (childRect.bottom <= parentRect.top + parentViewableArea.height);
+    let childRect = child.getBoundingClientRect();
+    let isViewable = (childRect.top >= parentRect.top) && (childRect.bottom <= parentRect.top + parentViewableArea.height);
     
-    // if you can't see the child try to scroll parent
     if (!isViewable) {
-        // Should we scroll using top or bottom? Find the smaller ABS adjustment
         const scrollTop = childRect.top - parentRect.top;
         const scrollBot = childRect.bottom - parentRect.bottom;
-        if (Math.abs(scrollTop) < Math.abs(scrollBot)) {
-            // we're near the top of the list
-            parent.scrollTop += scrollTop;
-        } else {
-            // we're near the bottom of the list
-            parent.scrollTop += scrollBot;
-        }
+        if (Math.abs(scrollTop) < Math.abs(scrollBot)) parent.scrollTop += scrollTop;
+        else parent.scrollTop += scrollBot;
     }
-    
 }
     
 
@@ -181,7 +167,6 @@ export default function Select (props) {
     }, [chips, editing]);
 
     const displayedChips = [
-
         ...(displayedPresetChips.filter(chip => looseMatch(chip.name, localData))[0] ? [displayedPresetChips.filter(chip => looseMatch(chip.name, localData))[0]] : []).map(chip => ({ chip })),
         ...displayedPresetChips.filter(chip => !looseMatch(chip.name, localData)).map(chip => ({ chip })),
         ...((localData?.length && custom) ? [{

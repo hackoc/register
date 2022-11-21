@@ -150,13 +150,12 @@
 }
 
 .wrapper > label > span, .chip {
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-    -khtml-user-select: none; /* Konqueror HTML */
-    -moz-user-select: none; /* Old versions of Firefox */
-    -ms-user-select: none; /* Internet Explorer/Edge */
-    user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .wrapper > label > span > span {
@@ -234,14 +233,10 @@
     overflow-y: hidden;
     z-index: 30;
     background-color: white;
-
-    /* display: none; */
     height: 0px;
     pointer-events: none;
     filter: opacity(0);
-
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-
 }
 
 .wrapper:focus-within > div.content ~ .dropdown {
@@ -260,7 +255,6 @@
 }
 
 .chip {
-    /* background: rgb(250, 210, 156); */
     background: #ffe2dd;
     border-radius: 12px;
     padding: 0.25rem 0.4rem;
@@ -271,32 +265,26 @@
 }
 
 .chip[data-color="1"] {
-    /* background: rgb(251, 154, 154); */
     background: #fbdec9;
 }
 
 .chip[data-color="2"] {
-    /* background: rgb(247, 164, 235); */
     background: #feecc8;
 }
 
 .chip[data-color="3"] {
-    /* background: #dca7ff; */
     background: #dbeddb;
 }
 
 .chip[data-color="4"] {
-    /* background: rgb(160, 163, 244); */
     background: #d3e5ef;
 }
 
 .chip[data-color="5"] {
-    /* background: rgb(134, 234, 243); */
     background: #e8deee;
 }
 
 .chip[data-color="6"] {
-    /* background: rgb(156, 243, 134); */
     background: #f5e1e9;
 }
 
