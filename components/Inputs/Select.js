@@ -5,8 +5,119 @@ function defaultValidate (text) {
     return text?.length;
 }
 
+function isVisible (ele, container) {
+    if (!container) container = ele.parentElement;
+
+    const eleTop = ele.offsetTop;
+    const eleBottom = eleTop + ele.clientHeight;
+
+    const containerTop = container.scrollTop;
+    const containerBottom = containerTop + container.clientHeight;
+
+    // The element is fully visible in the container
+    return (
+        (eleTop >= containerTop && eleBottom <= containerBottom) ||
+        // Some part of the element is visible in the container
+        (eleTop < containerTop && containerTop < eleBottom) ||
+        (eleTop < containerBottom && containerBottom < eleBottom)
+    );
+}
+
+function scrollParentToChild (child, parent) {
+    // Where is the parent on page
+    if (!parent) parent = child.parentElement;
+    var parentRect = parent.getBoundingClientRect();
+    // What can you see?
+    var parentViewableArea = {
+        height: parent.clientHeight,
+        width: parent.clientWidth
+    };
+    
+    // Where is the child
+    var childRect = child.getBoundingClientRect();
+    // Is the child viewable?
+    var isViewable = (childRect.top >= parentRect.top) && (childRect.bottom <= parentRect.top + parentViewableArea.height);
+    
+    // if you can't see the child try to scroll parent
+    if (!isViewable) {
+        // Should we scroll using top or bottom? Find the smaller ABS adjustment
+        const scrollTop = childRect.top - parentRect.top;
+        const scrollBot = childRect.bottom - parentRect.bottom;
+        if (Math.abs(scrollTop) < Math.abs(scrollBot)) {
+            // we're near the top of the list
+            parent.scrollTop += scrollTop;
+        } else {
+            // we're near the bottom of the list
+            parent.scrollTop += scrollBot;
+        }
+    }
+    
+}
+    
+
+function looseMatch (str1, str2) {
+    const modify = str => str?.toLowerCase()?.split('')?.filter(a => `abcdefghijklmnopqrstuvwxyz1234567890`.includes(a))?.join('') ?? '';
+    return modify(str1) == modify(str2);
+}
+
+export function Chip ({ chipData: chip, forceUpdate, chips, setChips, multiSelect, presetChips, localData, isCustom, isSelected, resetSelected }) {
+    const selfRef = useRef(null);
+
+    useEffect(() => {
+        if (!isVisible(selfRef.current)) {
+            console.log(' .   fgd f')
+            scrollParentToChild(selfRef.current);
+        }
+    }, [isSelected]);
+
+    return (
+        <div ref={selfRef} className={styles.chipOption} style={isSelected ? { background: 'red' } : {}} onMouseDown={e => {
+            if (isCustom) {
+                e.preventDefault();
+                resetSelected(0);
+                let theseChips = JSON.parse(JSON.stringify(chips));
+                theseChips.push({
+                    name: localData,
+                    color: chip.color,
+                    id: Math.floor(Math.random() * 10000) + '-' + Date.now()
+                });
+                setChips(theseChips);
+                setActiveColor(Math.random() * 6 | 0);
+                setLocalData('');
+                forceUpdate();
+            } else {
+                e.preventDefault();
+                resetSelected(0);
+                let index = 0;
+                presetChips.forEach((c, i) => (c.name == chip.name ? index = i : 0));
+                let thesePresetChips = JSON.parse(JSON.stringify(presetChips));
+                let theseChips = chips;
+                let thisChip = thesePresetChips.splice(index, 1)[0];
+                if (multiSelect) theseChips.push({
+                    name: thisChip.name,
+                    color: thisChip.color,
+                    id: Math.floor(Math.random() * 10000) + '-' + Date.now()
+                });
+                else theseChips = [
+                    {
+                        name: thisChip.name,
+                        color: thisChip.color,
+                        id: Math.floor(Math.random() * 10000) + '-' + Date.now()
+                    }
+                ];
+                setChips(theseChips);
+                forceUpdate();
+            }
+        }}>
+            {isCustom && 'Add '} <span data-color={chip.color} className={styles.chip} key={Math.floor(Math.random() * 10000) + '-' + Date.now()}>{chip.name} <span className={styles.close}>×</span></span>
+        </div>
+    );
+}
+
 export default function Select (props) {
     const { multi, options = [], special, validate: _validate, name, description, help, placeholder, data, setData, initialData, wrapperClass, width, margin, type, id: _id, required } = props;
+
+    const [selected, setSelected] = useState(0);
 
     const id = _id ?? name?.toLowerCase()?.split(' ')?.join('-')?.split('')?.filter(a => `abcdefghijklmnopqrstuvwxyz1234567890-_`.includes(a))?.join('') ?? 'error';
     const validate = data => (_validate ?? defaultValidate)() && (required ? data?.length : true);
@@ -57,6 +168,20 @@ export default function Select (props) {
         setValid(validate(chips));
     }
 
+    function resetSelected () {
+        setSelected(0);
+    }
+
+    const displayedChips = [
+
+        ...(displayedPresetChips.filter(chip => looseMatch(chip.name, localData))[0] ? [displayedPresetChips.filter(chip => looseMatch(chip.name, localData))[0]] : []).map(chip => ({ chip })),
+        ...displayedPresetChips.filter(chip => !looseMatch(chip.name, localData)).map(chip => ({ chip })),
+        ...((localData?.length && custom) ? [{
+            name: localData?.trim(),
+            color: activeColor
+        }] : []).map(chip => ({ chip, isCustom: true }))
+    ];
+
     return (
         <>
             <div className={[wrapperClass, styles.wrapper, valid && styles.isValid, partiallyValid && !valid && styles.isPartiallyValid].filter(l => l).join(' ')} style={{
@@ -65,16 +190,24 @@ export default function Select (props) {
                 boxSizing: 'border-box'
             }}>
                 <label for={id}>{name} {help && <span><span aria-label={help} tabIndex={0}>?</span></span>}</label>
-                <p>{description}</p>
-                <div className={styles.content} onBlur={finishEdits} onClick={() => (inputRef.current.focus(), dropdownRef.current.scrollTop = 0, startEdits())}>
+                <p>{description} {selected}</p>
+                <div className={styles.content} onBlur={finishEdits} onClick={e => (e.preventDefault(), inputRef.current.focus(), dropdownRef.current.scrollTop = 0, startEdits(), setSelected(0))} onKeyDown={e => {
+                    if (e.key == 'ArrowDown') {
+                        setSelected((selected + 1 + displayedChips.length) % displayedChips.length);
+                        console.log(e.key, e.target.contains(document.activeElement));
+                    } else if (e.key == 'ArrowUp') {
+                        setSelected((selected - 1 + displayedChips.length) % displayedChips.length);
+                        console.log(e.key, e.target.contains(document.activeElement));
+                    }
+                }}>
                     {chips.map(chip => (
-                        <span onMouseDown={e => e.preventDefault()} data-color={chip.color} className={styles.chip} key={chip.id} onClick={e => {
+                        <span onMouseDown={e => e.preventDefault()} data-color={chip.color} className={styles.chip} key={chip.id}>{chip.name} <span className={styles.close} onClick={e => {
                             let index = 0;
                             chips.forEach((c, i) => (c.id == chip.id ? index = i : 0));
                             let theseChips = JSON.parse(JSON.stringify(chips));
                             theseChips.splice(index, 1);
                             setChips(theseChips);
-                        }}>{chip.name}</span>
+                        }}>×</span></span>
                     ))}
                     <input placeholder={chips?.length == 0 ? 'Select' : ''} onChange={e => {
                         setLocalData(e.target.value);
@@ -86,18 +219,20 @@ export default function Select (props) {
                             theseChips.pop();
                             setChips(theseChips);
                         } else if ((e.key == 'Enter' || e.key == ',')) {
+                            let activeChip = displayedChips[selected].chip;
+                            console.log({ activeChip });
                             if (e.key == ',') e.preventDefault();
                             let theseChips = JSON.parse(JSON.stringify(chips));
                             if (!displayedPresetChips.length && !custom) return;
                             if (multiSelect) theseChips.push({
-                                name: displayedPresetChips.length ? displayedPresetChips[0].name : localData.trim(),
-                                color: displayedPresetChips.length ? displayedPresetChips[0].color :  activeColor,
+                                name: activeChip.name,
+                                color: activeChip.color,
                                 id: localData.toLowerCase().split(' ').join('-')
                             });
                             else theseChips = [
                                 {
-                                    name: displayedPresetChips.length ? displayedPresetChips[0].name : localData.trim(),
-                                    color: displayedPresetChips.length ? displayedPresetChips[0].color :  activeColor,
+                                    name: activeChip.name,
+                                    color: activeChip.color,
                                     id: localData.toLowerCase().split(' ').join('-')
                                 }
                             ];
@@ -105,6 +240,7 @@ export default function Select (props) {
                             setChips(theseChips);
                             e.target.value = '';
                             setLocalData('');
+                            resetSelected();
                             if (setData instanceof Function) setData('');
                         }
                     }}
@@ -116,48 +252,17 @@ export default function Select (props) {
                 </div>
                 <span>✓</span>
                 <div className={styles.dropdown} ref={dropdownRef} tabIndex="-1" onFocus={() => inputRef.current.focus()} onMouseDown={startEdits}>
-                    {displayedPresetChips.map(chip => (
-                        <div className={styles.chipOption} onMouseDown={e => {
-                            e.preventDefault();
-                            let index = 0;
-                            presetChips.forEach((c, i) => (c.name == chip.name ? index = i : 0));
-                            let thesePresetChips = JSON.parse(JSON.stringify(presetChips));
-                            let theseChips = chips;
-                            let thisChip = thesePresetChips.splice(index, 1)[0];
-                            if (multiSelect) theseChips.push({
-                                name: thisChip.name,
-                                color: thisChip.color,
-                                id: Math.floor(Math.random() * 10000) + '-' + Date.now()
-                            });
-                            else theseChips = [
-                                {
-                                    name: thisChip.name,
-                                    color: thisChip.color,
-                                    id: Math.floor(Math.random() * 10000) + '-' + Date.now()
-                                }
-                            ];
-                            setChips(theseChips);
-                            forceUpdate();
-                        }}>
-                            <span data-color={chip.color} className={styles.chip} key={Math.floor(Math.random() * 10000) + '-' + Date.now()}>{chip.name}</span>
-                        </div>
-                    ))}
-                    {(localData?.length && custom) ? 
-                        <div className={styles.chipOption} onMouseDown={e => {
-                            let theseChips = JSON.parse(JSON.stringify(chips));
-                            theseChips.push({
-                                name: localData,
-                                color: activeColor,
-                                id: Math.floor(Math.random() * 10000) + '-' + Date.now()
-                            });
-                            setChips(theseChips);
-                            setActiveColor(Math.random() * 6 | 0);
-                            setLocalData('');
-                            forceUpdate();
-                        }}>
-                            Add <span data-color={activeColor} className={styles.chip} key={Math.floor(Math.random() * 10000) + '-' + Date.now()}>{localData}</span>
-                        </div>
-                    : null}
+                    {displayedChips.map(({ chip, isCustom }, i) => <Chip chipData={chip} {...{
+                        forceUpdate,
+                        chips,
+                        setChips,
+                        multiSelect,
+                        presetChips,
+                        localData,
+                        isCustom,
+                        resetSelected,
+                        isSelected: selected == i
+                    }} />)}
                 </div>
             </div>
         </>

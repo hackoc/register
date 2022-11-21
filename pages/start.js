@@ -3,6 +3,7 @@ import styles from '../styles/Start.module.css'
 import Icon from '@hackclub/icons'
 import Modal from '../components/Modal'
 import Text from '../components/Inputs/Text.js';
+import Title from '../components/Inputs/Title.js';
 import Select from '../components/Inputs/Select.js';
 import Question from '../components/Question';
 import { questions, sections } from '../lib/questions.js';
@@ -151,7 +152,12 @@ export default function Home() {
                                     validate: question.verify,
                                     required: question.required
                                   }} />
-                                :
+                                : question.special == 'text' ? <Title {...{
+                                  name: question.name,
+                                  description: question.description,
+                                  help: question.help,
+                                  width: '400px',
+                                }} /> :
                                   <Text {...{
                                     name: question.name,
                                     description: question.description,

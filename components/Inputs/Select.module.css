@@ -74,6 +74,13 @@
     min-width: 200px;
     font-family: system-ui, Inter;
     position: relative;
+}
+
+.content:not(:focus-within), .content:not(:focus-within) * {
+    cursor: pointer!important;
+}
+
+.content:focus-within {
     cursor: text;
 }
 
@@ -184,10 +191,9 @@
 
 .dropdown {
     position: absolute;
-    top: calc( 100% - 0px );
+    top: calc( 100% + 2px );
     left: 0%;
     width: 100%;
-    overflow-y: auto;
     border-radius: 0.25em;
     border-color: #d3d3d4;
     transition: 0.15s ease-out;
@@ -197,11 +203,13 @@
     cursor: default;
     font-weight: 500;
     font-family: Inter;
+    overflow-y: hidden;
     z-index: 30;
     background-color: white;
 
     /* display: none; */
     height: 0px;
+    pointer-events: none;
     filter: opacity(0);
 
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
@@ -211,6 +219,8 @@
 .wrapper:focus-within > div.content ~ .dropdown {
     display: block;
     height: 150px;
+    top: 100%;
+    overflow-y: auto;
     filter: opacity(1);
 
     pointer-events: all;
@@ -228,7 +238,7 @@
     font-size: 0.85rem;
     padding-right: 24px;
     position: relative;
-    cursor: pointer;
+    cursor: default;
 }
 
 .chip[data-color="1"] {
@@ -255,8 +265,7 @@
     background: rgb(156, 243, 134);
 }
 
-.chip::after {
-    content: "×";
+.chip .close {
     position: absolute;
     right: 0.25rem;
     top: 50%;
@@ -273,7 +282,7 @@
     transition: 0.2s all;
 }
 
-.dropdown .chip::after {
+.dropdown .chip .close {
     display: none;
 }
 
@@ -281,9 +290,10 @@
     padding-right: 0.4rem;
     display: inline-block;
     border-radius: 12px;
+    cursor: pointer;
 }
 
-.chip:hover::after {
+.chip .close:hover {
     color: rgba(10, 10, 10, 0.922);
 }
 
